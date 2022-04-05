@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "generate_ror_files"
+version = "0.1.0"
+description = ""
+authors = ["Achilleas Pitsillides"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pandas = "*"
+pysam = "*"
+
+[tool.poetry.scripts]
+generate_ror_files = 'generate_ror_files.aux:main'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
