@@ -5,11 +5,12 @@
 
 Running
 -------
-1. Enter the cloned directory, e.g: `cd generate_ror_files`
-2. Make sure you have poetry available. On our cluster it's availabe as part of the python 3 module e.g: (module load python3/3.8.10)
-3. Modify the config file `sample_generate_ror.config` file and either copy to "generate_ror.config" or
+1. Make sure you have poetry available. On our cluster it's availabe as part of the python 3 module e.g: (module load python3/3.8.10)
+2. Enter the cloned directory, e.g: `cd generate_ror_files`
+3. Install dependencies 'poetry install'
+4. Modify the config file `sample_generate_ror.config` file and either copy to "generate_ror.config" or
    provide its location as an optional argument of the command.
-4. Run the program using `poetry run generate_ror_files annotated_popseq_files.csv output_dir/prefix`
+5. Run the program using `poetry run generate_ror_files annotated_popseq_files.csv output_dir/prefix`
 
 The annotated_popseq_files.csv files have the format
 
