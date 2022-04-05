@@ -4,23 +4,14 @@ import os.path as path
 import pandas as pd
 import configparser
 
+# Get chrom pos ref alt from location file
 def locations_from_file(filename):
-    with open(filename) as fin:
-        header = next(fin).strip().split(",")
-        enum_header = {j: i for (i, j) in enumerate(header)}
-        cols = ["chrom", "pos", "ref", "alt", "Variant", "Amino acid"]
-        col_indices = [enum_header[i] for i in cols]
-        results = list()
-        for line in fin:
-            split_line = line.strip().split(",")
-            results.append(tuple([split_line[i] for i in col_indices]))
-
-    return results
-
-def cdna_from_var_string(s):
-    return s.split(" ")[2]
-
-def get_variant(chrom, pos, ref, alt, variant, amino, bcf_filename_template):
+    result = pd.read_csv(filename)[["chrom","pos","ref","alt"]].values
+    return result
+    
+# Get variant at position from bcf filename
+# For bcf files fetch takes 0 based positions
+def get_variant(chrom, pos, ref, alt, bcf_filename_template):
     contig = f"chr{chrom}"
     bcf_filename = bcf_filename_template.format(chrom=chrom)
     bcf_in = VariantFile(bcf_filename)
@@ -34,13 +25,16 @@ def get_variant(chrom, pos, ref, alt, variant, amino, bcf_filename_template):
     bcf_in.close()
     return (header, results)
 
+# Combine dosages and write to outputfile
 def get_dosages(location_filename, output_filename, bcf_filename_template): 
     dat = locations_from_file(location_filename)
     results = [get_variant(*info,bcf_filename_template) for info in dat]
 
+    # Check that the samples in the files are in the same order
     samples_in_first_vcf = list(results[0][0].samples)
     sample_orders_are_identical = all([list(x[0].samples)
                                        == samples_in_first_vcf for x in results])
+    # We are not using pandas just in case the file is large.
     if sample_orders_are_identical:
         with open(output_filename, "wt") as fout:
             samples_str  =",".join(samples_in_first_vcf)
@@ -58,7 +52,7 @@ def get_dosages(location_filename, output_filename, bcf_filename_template):
                     out = f"{name},{dosages_str}\n"
                     fout.write(out)
                 elif len(res) > 1:
-                    print(f"Something is off {info}")
+                    raise NameError(f"Something is off multiple results for variant: {info}")
                 else:
                     print(f"No results were found for {info}")
     else:
